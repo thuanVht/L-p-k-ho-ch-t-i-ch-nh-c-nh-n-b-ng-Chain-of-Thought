@@ -1,51 +1,63 @@
-# **Lập kế hoạch tài chính cá nhân bằng Chain-of-Thought**
+# Prompt lập kế hoạch tài chính bằng CoT (bản gọn)
 
-## **1. Mục tiêu**
+```
+# VAI TRÒ
+Bạn là chuyên gia tư vấn tài chính cá nhân, tính toán chính xác và minh bạch.
 
-Luyện tập tư duy suy luận logic phức tạp của AI bằng kỹ thuật Chain-of-Thought (CoT).
+# DỮ LIỆU ĐẦU VÀO (triệu VNĐ/tháng)
+- Thu nhập 3 tháng gần nhất: {T1}; {T2}; {T3}
+- Thuế/bảo hiểm: {x}% thu nhập
+- Chi phí cố định: {liệt kê từng khoản}
+- Nợ trả tối thiểu: {liệt kê từng khoản}
+- Mục tiêu tiết kiệm: tối thiểu 20% thu nhập bình quân (gồm quỹ dự phòng)
 
-Biết cách kiểm soát các bước lập luận trung gian để hạn chế sai sót tính toán số học của LLM.
+# NHIỆM VỤ
+Hãy suy nghĩ từng bước một và tính toán chi tiết trước khi đưa ra quyết định.
 
-Cấu trúc kết quả đầu ra trực quan gồm cả phần phân tích logic và bảng tổng hợp số liệu.
+# QUY TRÌNH
+Bước 0: Thu nhập cơ sở = (T1 + T2 + T3) / 3.
+Bước 1: Khả dụng = Thu nhập cơ sở − Thuế/BH − Chi phí cố định.
+Bước 2: Còn lại = Khả dụng − Nợ trả tối thiểu.
+Bước 3: Tiết kiệm = 20% × Thu nhập cơ sở (chia dự phòng và tích lũy). Còn lại = Bước 2 − Tiết kiệm.
+Bước 4: Chia phần còn lại theo 50/30/20: 50% thiết yếu, 30% cá nhân, 20% trả nợ thêm.
 
-## **2. Bối cảnh bài toán**
+# QUY TẮC
+- Mỗi phép tính một dòng: công thức, thay số, kết quả. Không nhảy cóc.
+- Sau mỗi bước ghi "Kiểm tra" bằng phép tính ngược.
+- Nếu có số âm, dừng lại, nêu số thiếu và đề xuất điều chỉnh.
+- Tỷ lệ % tính trên thu nhập cơ sở, tổng phải đúng 100%. Nếu lệch do làm tròn, chỉnh ở hạng mục lớn nhất.
 
-Một cá nhân có thu nhập biến động mỗi tháng và đang có một số khoản nợ cần thanh toán. Họ cần một trợ lý AI thông minh lập kế hoạch tài chính chi tiết, tối ưu hóa dòng tiền và đưa ra đề xuất phân bổ ngân sách chi tiêu hợp lý.
+# ĐỊNH DẠNG
+Phần 1: Nhật ký suy luận (Bước 0 đến Bước 4).
+Phần 2: Bảng Markdown | Hạng mục | Số tiền | Tỷ lệ % | Ghi chú | có dòng TỔNG CỘNG = 100%.
+```
 
-Do bài toán liên quan đến nhiều phép tính số học và ràng buộc tài chính (tiết kiệm tối thiểu 20%, trả nợ đúng hạn, quỹ dự phòng), nếu để AI trả lời ngay đáp án sẽ rất dễ bị sai lệch số liệu.
+## Chạy thử
 
-## **3. Yêu cầu**
+Dữ liệu: thu nhập 24, 30, 36 triệu. Thuế/BH 10%. Chi phí cố định: nhà 6, điện nước và internet 1,5, đi lại 1,5. Nợ tối thiểu: thẻ 1,2 và vay tiêu dùng 1,8.
 
-Thiết kế prompt yêu cầu AI lập kế hoạch tài chính hàng tháng từ dữ liệu đầu vào gồm: Thu nhập, Chi phí cố định, Các khoản nợ, Mục tiêu tiết kiệm.
+### Phần 1: Nhật ký suy luận
 
-Yêu cầu AI thực hiện suy luận từng bước (Chain-of-Thought) để tính toán ngân sách trước khi xuất kết quả cuối cùng.
+- **Bước 0**: (24 + 30 + 36) / 3 = 90 / 3 = **30**
+- **Bước 1**: thuế 30 × 10% = 3. Cố định 6 + 1,5 + 1,5 = 9. Khả dụng 30 − 3 − 9 = **18**. Kiểm tra: 18 + 3 + 9 = 30 ✓
+- **Bước 2**: nợ 1,2 + 1,8 = 3. Còn lại 18 − 3 = **15**. Kiểm tra: 15 + 3 = 18 ✓
+- **Bước 3**: tiết kiệm 30 × 20% = 6 (dự phòng 3, tích lũy 3). Còn lại 15 − 6 = **9**. Kiểm tra: 9 + 6 = 15 ✓
+- **Bước 4**: thiết yếu 9 × 50% = 4,5. Cá nhân 9 × 30% = 2,7. Trả nợ thêm 9 × 20% = 1,8. Kiểm tra: 4,5 + 2,7 + 1,8 = 9 ✓
 
-## **4. Quy tắc xử lý**
+### Phần 2: Bảng phân bổ
 
-Kích hoạt Chain-of-Thought bằng chỉ thị tường minh: 'Hãy suy nghĩ từng bước một và tính toán chi tiết trước khi đưa ra quyết định'.
+| Hạng mục | Số tiền (triệu) | Tỷ lệ % | Ghi chú |
+|---|---|---|---|
+| Thuế và bảo hiểm | 3,0 | 10,00% | Khấu trừ 10% |
+| Chi phí cố định | 9,0 | 30,00% | Nhà, điện nước, đi lại |
+| Nợ trả tối thiểu | 3,0 | 10,00% | Thẻ 1,2 + vay 1,8 |
+| Quỹ dự phòng | 3,0 | 10,00% | Một nửa khoản tiết kiệm |
+| Tiết kiệm tích lũy | 3,0 | 10,00% | Một nửa khoản tiết kiệm |
+| Thiết yếu linh hoạt | 4,5 | 15,00% | 50% phần còn lại |
+| Chi tiêu cá nhân | 2,7 | 9,00% | 30% phần còn lại |
+| Trả nợ thêm | 1,8 | 6,00% | 20% phần còn lại |
+| **TỔNG CỘNG** | **30,0** | **100,00%** | Khớp thu nhập cơ sở |
 
-Vạch ra quy trình lập luận gồm các bước:
+Tiết kiệm = 6 / 30 = 20%, đạt mức tối thiểu.
 
-- Bước 1: Tính toán tổng thu nhập khả dụng sau khi trừ thuế và chi phí cố định bắt buộc.
-
-- Bước 2: Phân bổ khoản tiền trả nợ tối thiểu.
-
-- Bước 3: Trích lập quỹ tiết kiệm theo tỷ lệ cam kết.
-
-- Bước 4: Chia phần còn lại cho chi tiêu linh hoạt theo quy tắc 50/30/20 cải tiến.
-
-## **5. Yêu cầu xử lý dữ liệu**
-
-Trình bày kết quả lập luận thành hai phần rõ rệt:
-
-- Phần 1: Nhật ký suy luận logic (Reasoning Steps) chỉ ra công thức tính toán và số liệu trung gian.
-
-- Phần 2: Bảng phân bổ ngân sách cuối cùng bằng Markdown Table với các cột: Hạng mục, Số tiền, Tỷ lệ %, Ghi chú.
-
-## **6. Ràng buộc kỹ thuật**
-
-Bắt buộc hiển thị đầy đủ phép tính cộng trừ nhân chia trung gian, không nhảy cóc ra kết quả.
-
-Đảm bảo tổng tỷ lệ phần trăm phân bổ ngân sách phải bằng chính xác 100%.
-
-Không dùng Pydantic hay code Python, thực hiện hoàn toàn bằng kỹ năng Prompting logic.
+**Lưu ý khi nộp bài**: nêu rõ giả định tiết kiệm tính trên thu nhập trước thuế. Nếu muốn an toàn hơn với thu nhập biến động, đổi Bước 0 sang dùng tháng thấp nhất.
